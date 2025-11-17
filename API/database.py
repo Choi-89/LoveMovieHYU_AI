@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from dotenv import load_dotenv
 import os
 
-username = os.getenv('DB_USERNAME', 'know')
+username = os.getenv('DB_USERNAME', 'kwon')
 password = os.getenv('DB_PASSWORD', 'qwer1234')
 host = os.getenv('DB_HOST', 'hymv-database-tmdb.c16ywa0gqanf.ap-northeast-2.rds.amazonaws.com')
 port = os.getenv('DB_PORT', '3306')
