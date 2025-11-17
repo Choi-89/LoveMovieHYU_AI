@@ -6,6 +6,8 @@ import tensorflow as tf
 import tensorflow_recommenders as tfrs
 from sqlalchemy.orm import joinedload
 
+import matplotlib.pyplot as plt
+
 # db 값 가져오기
 db = SessionLocal()
 movies_query = db.query(Movie).options(joinedload(Movie.movie_genre)).all()
@@ -76,7 +78,35 @@ class MovieGenreModel(tfrs.Model):
     
 model = MovieGenreModel(movie_model, task)
 model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.1))
-model.fit(train_dataset, epochs=3)
+history = model.fit(train_dataset, epochs=15)
+
+print("="*50)
+print("훈련 기록에 저장된 키(Keys) 목록:")
+print(history.history.keys())
+print("="*50)
+
+# 손실 및 정확도 그래프 확인
+plt.figure(figsize=(10, 4))
+
+plt.subplot(1, 2, 1) # 1행 2열 중 첫 번째
+plt.plot(history.history['loss'], label='Training Loss')
+plt.legend()
+
+accuracy_key = 'factorized_top_k/top_10_categorical_accuracy'
+if 'factorized_top_k/top_10_accuracy' in history.history:
+    accuracy_key = 'factorized_top_k/top_10_accuracy'
+elif 'factorized_top_k/top_5_accuracy' in history.history:
+    accuracy_key = 'factorized_top_k/top_5_accuracy'
+
+plt.subplot(1, 2, 2)
+plt.plot(history.history[accuracy_key], label=f'Accuracy ({accuracy_key})')
+plt.title('Model Top-K Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
 
 index = tfrs.layers.factorized_top_k.BruteForce(model.model)
 
@@ -86,10 +116,9 @@ index.index_from_dataset(
     )
 )
 
-query_genre = "드라마"
+query_genre = "액션"
 _, recommendations = index(tf.constant([query_genre]))
- 
-print(f"\n--- '{query_genre}' 장르 추천 Top 10 ---")
+print(f"\n---'{query_genre}' 장르 추천(10개)---")
 for movie_id in recommendations[0, :10].numpy():
     title = movies[movies['id'] == movie_id.decode('utf-8')]['title'].values[0]
     print(f"추천 영화: {title}")
