@@ -16,3 +16,9 @@ def get_db():
 @app.get("/")
 async def read_root(db: Session= Depends(get_db)):
     return {"message": "데이터베이스 연결에 성공하였습니다."}
+
+@app.get("/genre/{genre}")
+async def genre_recommnedation(genre: str):
+    from models.Genre import train_genre_model
+    genres = train_genre_model()
+    return {"recommended_genres": genres}
