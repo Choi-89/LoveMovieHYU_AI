@@ -3,3 +3,10 @@ venv/
 __pycache__/
 *.pyc
 .DS_Store
+
+movies.csv
+*.log
+tfrs_model/variables/variables.data-00000-of-00001
+tfrs_model/variables/variables.index
+tfrs_model/saved_model.pb
+tfrs_model/fingerprint.pb
