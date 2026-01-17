@@ -32,5 +32,27 @@ def create_dataset(output_file="./movies.csv"):
     ratings = ratings[['id', 'genres']]
     ratings = ratings.dropna()
 
+    # genre -> feel 변환
+    for raw in ratings.itertuples():
+        genre = raw.genres
+        if genre in ["드라마", "힐링", "가족"]:
+            ratings.loc[raw.Index, 'genres'] = "편안해요"
+        elif genre in ["코미디", "로코", "애니메이션"]:
+            ratings.loc[raw.Index, 'genres'] = "신나"
+        elif genre in ["멜로", "감정 드라마"]:
+            ratings.loc[raw.Index, 'genres'] = "슬퍼"
+        elif genre in ["드라마", "독립"]:
+            ratings.loc[raw.Index, 'genres'] = "우울"
+        elif genre in ["예술", "독립", "사회"]:
+            ratings.loc[raw.Index, 'genres'] = "생각"
+        elif genre in ["스릴러", "미스터리"]:
+            ratings.loc[raw.Index, 'genres'] = "집중"
+        elif genre in ["액션", "스포츠"]:
+            ratings.loc[raw.Index, 'genres'] = "자극"
+        elif genre in ["로드무비", "일상"]:
+            ratings.loc[raw.Index, 'genres'] = "지쳐"
+        else:
+            ratings.loc[raw.Index, 'genres'] = "기타"
+
     ratings.to_csv(output_file, index=False)
     print(f"Dataset saved to {output_file}")
