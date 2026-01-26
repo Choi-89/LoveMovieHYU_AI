@@ -4,7 +4,7 @@ __pycache__/
 *.pyc
 .DS_Store
 
-movies.csv
+*.csv
 *.log
 tfrs_model/variables/variables.data-00000-of-00001
 tfrs_model/variables/variables.index
