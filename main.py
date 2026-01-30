@@ -16,7 +16,9 @@ def get_db():
 async def lifespan(app: FastAPI):
     from models.Genre import train_genre_model
     from models.Dataset import create_dataset
+    from models.TrainingDataset import make_training_dataset
     create_dataset()
+    make_training_dataset()
     train_genre_model()
 
     yield
@@ -28,11 +30,15 @@ app = FastAPI(lifespan=lifespan)
 async def read_root(db: Session= Depends(get_db)):
     return {"message": "데이터베이스 연결, 학습 성공하였습니다."}
 
-@app.get("/genre/{genre}")
-async def validate(genre: str):
+@app.get("/api/recommend/movie/{user_id}/{P}/{E}/{I}")
+async def validate(user_id: int, P: float, E: float, I: float):
     from models.Validation import validate_model
-    genre = validate_model(genre)
-    return {"recommended_genres": genre}
+    genre = validate_model(user_id, P, E, I)
+    return {"recommended_movies": genre}
+
+@app.get("/api/recommend/{theme}")
+async def recommend_theme(theme: str):
+    return {"message": f"{theme} 개발 중"}
 
 if __name__ == "__main__":
     import uvicorn
