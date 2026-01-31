@@ -27,9 +27,10 @@ def create_dataset(output_file="./movies.csv"):
 
     # 전처리
     movies['movie_id'] = movies['id'].astype(str)
+    movies['title'] = movies['title'].astype(str)
 
     ratings = movies.explode('genres')
-    ratings = ratings[['movie_id', 'genres']]
+    ratings = ratings[['movie_id', 'genres', 'title']]
     ratings = ratings.dropna()
 
     emotion = []

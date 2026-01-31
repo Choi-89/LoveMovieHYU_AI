@@ -5,6 +5,25 @@ from sqlalchemy.orm import Session
 
 from API.database import SessionLocal, Base, engine
 
+class Add_Movie:
+    def __init__(self, user_id: int, movie_id: int, P: float, E: float, I: float):
+        self.user_id = str(user_id)
+        self.movie_id = str(movie_id)
+        self.P = P
+        self.E = E
+        self.I = I
+
+    def to_dict(self):
+        return {
+            "user_id": self.user_id,
+            "movie_id": self.movie_id,
+            "P": self.P,
+            "E": self.E,
+            "I": self.I
+        }
+
+Add_Movies = []
+
 def get_db():
     db = SessionLocal()
     try:
@@ -39,6 +58,17 @@ async def validate(user_id: int, P: float, E: float, I: float):
 @app.get("/api/recommend/{theme}")
 async def recommend_theme(theme: str):
     return {"message": f"{theme} 개발 중"}
+
+@app.get("/api/dataset/{user_id}/{movie_id}/{P}/{E}/{I}")
+async def get_dataset_entry(user_id: int, movie_id: int, P: float, E: float, I: float):
+    Add_Movies.append(Add_Movie(user_id, movie_id, P, E, I).to_dict())
+    return {400: "success"}
+
+@app.get("/add/movie/")
+async def add_movie():
+    from models.Add_dataset import add_dataset
+    add_dataset(Add_Movies)
+    return {"message": "데이터 추가 완료"}
 
 if __name__ == "__main__":
     import uvicorn
