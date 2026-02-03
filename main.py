@@ -50,17 +50,13 @@ async def read_root(db: Session= Depends(get_db)):
     return {"message": "데이터베이스 연결, 학습 성공하였습니다."}
 
 @app.get("/api/recommend/movie/{user_id}/{P}/{E}/{I}")
-async def validate(user_id: int, P: float, E: float, I: float):
+async def validate(user_id: str, P: float, E: float, I: float):
     from models.Validation import validate_model
     genre = validate_model(user_id, P, E, I)
-    return {"recommended_movies": genre}
-
-@app.get("/api/recommend/{theme}")
-async def recommend_theme(theme: str):
-    return {"message": f"{theme} 개발 중"}
+    return genre
 
 @app.get("/api/dataset/{user_id}/{movie_id}/{P}/{E}/{I}")
-async def get_dataset_entry(user_id: int, movie_id: int, P: float, E: float, I: float):
+async def get_dataset_entry(user_id: str, movie_id: int, P: float, E: float, I: float):
     Add_Movies.append(Add_Movie(user_id, movie_id, P, E, I).to_dict())
     return {400: "success"}
 
@@ -72,4 +68,4 @@ async def add_movie():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=10000, reload=True)

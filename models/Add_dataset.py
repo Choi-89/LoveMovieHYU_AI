@@ -1,7 +1,7 @@
 import pandas as pd
 
 class Add_Movie:
-    def __init__(self, user_id: int, movie_id: int, P: float, E: float, I: float):
+    def __init__(self, user_id: str, movie_id: int, P: float, E: float, I: float):
         self.user_id = str(user_id)
         self.movie_id = str(movie_id)
         self.P = P

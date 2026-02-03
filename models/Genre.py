@@ -114,11 +114,13 @@ def train_genre_model():
 
     if manager.latest_checkpoint:
         checkpoint.restore(manager.latest_checkpoint)
-        df = pd.read_csv("add_data.csv")
+        df = pd.read_csv("emotional_dataset.csv")
+        model.fit(train, epochs=5)
     else:
         df = pd.read_csv("emotional_dataset.csv")
         print("Initializing from scratch.")
-    model.fit(train, epochs=15)
+        model.fit(train, epochs=15)
+  
 
     save_path_checkpoint = manager.save()
 

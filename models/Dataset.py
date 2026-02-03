@@ -15,7 +15,7 @@ def create_dataset(output_file="./movies.csv"):
     # Dataframe 변환
     movies_data = [
         {
-            "id": movie.id,
+            "id": movie.tmdb_id,
             "title": movie.title,
             "vote_average": float(movie.vote_average),
             "genres": [mg.genre.name for mg in movie.movie_genre]
