@@ -50,15 +50,16 @@ async def read_root(db: Session= Depends(get_db)):
     return {"message": "데이터베이스 연결, 학습 성공하였습니다."}
 
 @app.get("/api/recommend/movie/{user_id}/{P}/{E}/{I}")
-async def validate(user_id: str, P: float, E: float, I: float):
+async def validate(user_id: int, P: float, E: float, I: float):
     from models.Validation import validate_model
     genre = validate_model(user_id, P, E, I)
     return genre
 
 @app.get("/api/dataset/{user_id}/{movie_id}/{P}/{E}/{I}")
-async def get_dataset_entry(user_id: str, movie_id: int, P: float, E: float, I: float):
-    Add_Movies.append(Add_Movie(user_id, movie_id, P, E, I).to_dict())
-    return {400: "success"}
+async def get_dataset_entry(user_id: int, movie_id: int, P: float, E: float, I: float):
+    from models.Add_dataset import add_dataset
+    add_dataset(int(user_id), movie_id, P, E, I)
+    return {200: "success"}
 
 @app.get("/add/movie/")
 async def add_movie():

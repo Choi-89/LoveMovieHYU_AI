@@ -71,7 +71,7 @@ class Recommender(tfrs.Model):
         movie_embeddings = self.movie_model(features["movie_id"])
         return self.task(query_embeddings, movie_embeddings)
         
-def train_genre_model():
+def set_dataset(df):
     # 데이터 불러오기
     df = pd.read_csv("emotional_dataset.csv")
     p_index = df['P'].astype(np.float32).values
@@ -85,8 +85,11 @@ def train_genre_model():
         'I': i_index
     }
     # TF 데이터셋 생성
-    dataset = tf.data.Dataset.from_tensor_slices(data_dict)
+    return tf.data.Dataset.from_tensor_slices(data_dict)
 
+def train_genre_model():
+    df = pd.read_csv("emotional_dataset.csv")
+    dataset = set_dataset(df)
     # 유니크 vocabulary 생성
     movie_ids = df["movie_id"].unique()
 
@@ -95,7 +98,11 @@ def train_genre_model():
     embedding_dimension = 32
         
     user_model = UserModel(embedding_dimension)
-    bio_comb = np.stack([p_index, e_index, i_index], axis=1)
+    bio_comb = np.stack([
+        dataset['P'](np.float32),
+        dataset['E'](np.float32),
+        dataset['I'](np.float32)],
+        axis=1)
     user_model.adapt_normalization(bio_comb)
     movie_model = MovieModel(embedding_dimension)
     
@@ -114,10 +121,22 @@ def train_genre_model():
 
     if manager.latest_checkpoint:
         checkpoint.restore(manager.latest_checkpoint)
-        df = pd.read_csv("emotional_dataset.csv")
-        model.fit(train, epochs=5)
+        try:
+            if os.path.exists("add_dataset.csv"):
+                df = pd.read_csv("add_dataset.csv")
+                dataset = set_dataset(df)
+                train = dataset.shuffle(len(df)).batch(256).cache()
+                df.iloc[0:0].to_csv("add_dataset.csv", index=False)
+                model.optimizer.learning_rate.assign(0.01)
+                model.fit(train, epochs=5)
+            else:
+                print("학습 데이터 없음.")
+        except Exception as e:
+            print(f"Error reading dataset: {e}")
     else:
         df = pd.read_csv("emotional_dataset.csv")
+        dataset = set_dataset(df)
+        train = dataset.shuffle(len(df)).batch(256).cache()
         print("Initializing from scratch.")
         model.fit(train, epochs=15)
   

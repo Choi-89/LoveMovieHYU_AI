@@ -4,7 +4,7 @@ import json
 
 model_path = "C:\\capstone\\LoveMovieHYU-LMHYU_DipModel\\tfrs_model"
 
-def validate_model(user_id: str, P: float, E: float, I: float):
+def validate_model(user_id: int, P: float, E: float, I: float):
     try:
         model = tf.saved_model.load(model_path)
     except Exception as e:
@@ -12,7 +12,7 @@ def validate_model(user_id: str, P: float, E: float, I: float):
         return ["모델을 불러올 수 없습니다."]
     
     input_query = {
-        'user_id': tf.constant([[user_id]]),
+        'user_id': tf.constant([[user_id]], dtype=tf.string),
         'P': tf.constant([[P]]),
         'E': tf.constant([[E]]),
         'I': tf.constant([[I]])
